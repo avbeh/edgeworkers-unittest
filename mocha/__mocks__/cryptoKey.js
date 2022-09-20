@@ -1,43 +1,36 @@
 const sinon = require("sinon");
 
+//subtle object methods
 export const mock_crypto_subtle_importKey = sinon.stub();
-/*export class ImportKey {
-  constructor() {
-    this.importKey = mock_CrytoKey_subtle_importKey;
-  }
-}*/
-
 export const mock_crypto_subtle_encrypt = sinon.stub();
-/*export class Encrypt {
-  constructor() {
-    this.encrypt = mock_CrytoKey_subtle_encrypt;
-  }
-}*/
-
 export const mock_crypto_subtle_decrypt = sinon.stub();
-/*export class Decrypt {
-  constructor() {
-    this.decrypt = mock_CrytoKey_subtle_decrypt;
-  }
-}*/
-
 export const mock_crypto_subtle_verify = sinon.stub();
-/*export class Verify {
-  constructor() {
-    this.verify = mock_CrytoKey_subtle_verify;
-  }
-}*/
-
 export const mock_crypto_subtle_digest = sinon.stub();
-/*export class Digest {
-  constructor() {
-    this.digest = mock_CrytoKey_subtle_digest;
-  }
-}*/
 
-export const mock_crypto_getRandomValues = sinon.stub();
-export class Crypto {
+class Subtle {
   constructor() {
-    this.getRandomValues = mock_crypto_getRandomValues;
+    this.digest = mock_crypto_subtle_digest;
+    this.importKey = mock_crypto_subtle_importKey;;
+    this.encrypt = mock_crypto_subtle_encrypt;
+    this.decrypt = mock_crypto_subtle_decrypt;
+    this.verify = mock_crypto_subtle_verify;
   }
 }
+
+//crypto object methods
+export const mock_crypto_getRandomValues = sinon.stub();
+
+class Crypto {
+  constructor() {
+    this.getRandomValues = mock_crypto_getRandomValues;
+    this.subtle = new Subtle();
+  }
+}
+export const crypto = new Crypto();
+
+export const mock_verify_rs256 = sinon.stub();
+export const mock_pem2ab = sinon.stub();
+
+export const pem2ab = mock_pem2ab;
+export const verify_rs256 = mock_verify_rs256;
+
