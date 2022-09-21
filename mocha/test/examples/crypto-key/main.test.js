@@ -6,6 +6,7 @@ import {
   mock_crypto_subtle_digest,
   mock_crypto_subtle_encrypt,
   mock_crypto_subtle_importKey,
+  mock_crypto_subtle_verify,
 } from "../../../__mocks__/cryptoKey";
 
 const sinon = require("sinon");
@@ -33,6 +34,9 @@ describe("Crypto EW", () => {
     expect(mock_crypto_subtle_encrypt.calledWith()).to.be(true);
 
     expect(mock_crypto_subtle_decrypt.callCount).to.be(1);
-    expect(mock_crypto_subtle_decrypt.calledWith()).to.be(true);
+      expect(mock_crypto_subtle_decrypt.calledWith()).to.be(true);
+      
+      expect(mock_crypto_subtle_verify.callCount).to.be(1);
+      expect(mock_crypto_subtle_verify.calledWith()).to.be(true);
   });
 });
