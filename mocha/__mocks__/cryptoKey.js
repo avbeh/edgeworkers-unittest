@@ -30,7 +30,9 @@ export const crypto = new Crypto();
 
 export const mock_verify_rs256 = sinon.stub();
 export const mock_pem2ab = sinon.stub();
+export const mock_encoding_base64url_decode = sinon.stub();
 
 export const pem2ab = mock_pem2ab;
 export const verify_rs256 = mock_verify_rs256;
+export const base64url_decode = mock_encoding_base64url_decode;
 
