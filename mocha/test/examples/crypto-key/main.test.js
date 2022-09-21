@@ -26,7 +26,7 @@ describe("Crypto EW", () => {
     expect(mock_crypto_subtle_digest.callCount).to.be(1);
     expect(mock_crypto_subtle_digest.calledWith()).to.be(true);
 
-    expect(mock_crypto_subtle_importKey.callCount).to.be(2);
+    expect(mock_crypto_subtle_importKey.callCount).to.be(1);
     expect(mock_crypto_subtle_importKey.calledWith()).to.be(true);
 
     expect(mock_crypto_subtle_encrypt.callCount).to.be(1);

@@ -1,4 +1,6 @@
-import { crypto, pem2ab, verify_rs256} from "../../../__mocks__/cryptoKey";
+import { crypto } from "../../../__mocks__/cryptoKey";
+import { TextEncoder } from "encoding";
+
 /*
 
 function base64url_decode(input) {
@@ -42,6 +44,48 @@ async function verify_rs256(jwsObject, crypto_key) {
     new TextEncoder().encode(jwsSigningInput)
   );
 } */
+
+function base64url_decode(input) {
+  // base64url -> base64 rewrite borrowed from https://stackoverflow.com/a/51838635
+  // Replace non-url compatible chars with base64 standard chars
+  input = input.replace(/-/g, "+").replace(/_/g, "/");
+
+  // Pad out with standard base64 required padding characters
+  var pad = input.length % 4;
+  if (pad) {
+    if (pad === 1) {
+      throw new Error(
+        "InvalidLengthError: Input base64url string is the wrong length to determine padding"
+      );
+    }
+    input += new Array(5 - pad).join("=");
+  }
+
+  // Convert the base64 string into a binary string
+  var binary_string = atob(input);
+
+  // Convert the binary string into an ArrayBuffer
+  // Borrowed from https://stackoverflow.com/a/21797381
+  var len = binary_string.length;
+  var bytes = new Uint8Array(len);
+  for (var i = 0; i < len; i++) {
+    bytes[i] = binary_string.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+// Borrowed from https://stackoverflow.com/a/54113881
+async function verify_rs256(jwsObject, crypto_key) {
+  const jwsSigningInput = jwsObject.split(".").slice(0, 2).join(".");
+  const jwsSignature = jwsObject.split(".")[2];
+
+  return await crypto.subtle.verify(
+    { name: "RSASSA-PKCS1-v1_5" },
+    crypto_key,
+    base64url_decode(jwsSignature),
+    new TextEncoder().encode(jwsSigningInput)
+  );
+}
 
 export function onClientRequest(request) {
   /* let answer = "Hello, world";
@@ -95,33 +139,7 @@ export function onClientRequest(request) {
     encrypted_data
   );
 
-  let jwt =
-    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.NHVaYe26MbtOYhSKkoKYdFVomg4i8ZJd8_-RU8VNbftc4TSMb4bXP3l3YlNWACwyXPGffz5aXHc6lty1Y2t4SWRqGteragsVdZufDn5BlnJl9pdR_kdVFUsra2rWKEofkZeIC4yWytE58sMIihvo9H1ScmmVwBcQP6XETqYd0aSHp1gOa9RdUPDvoXQ5oqygTqVtxaDr6wUFKrKItgBMzWIdNZ6y7O9E0DhEPTbE9rfBo6KTFsHAZnMg4k68CDp2woYIaXbmYTWcvbzIuHO7_37GT79XdIwkm95QJ7hYC9RiwrV7mesbY4PAahERJawntho0my942XheVLmGwLMBkQ";
 
-  const pemEncodedKey = `-----BEGIN PUBLIC KEY-----
-        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu1SU1LfVLPHCozMxH2Mo
-        4lgOEePzNm0tRgeLezV6ffAt0gunVTLw7onLRnrq0/IzW7yWR7QkrmBL7jTKEn5u
-        +qKhbwKfBstIs+bMY2Zkp18gnTxKLxoS2tFczGkPLPgizskuemMghRniWaoLcyeh
-        kd3qqGElvW/VDL5AaWTg0nLVkjRo9z+40RQzuVaE8AkAFmxZzow3x+VJYKdjykkJ
-        0iT9wCS0DRTXu269V264Vf/3jvredZiKRkgwlL9xNAwxXFg0x/XFw005UWVRIkdg
-        cKWTjpBP2dPwVZ4WWC+9aGVd+Gyn1o0CLelf4rEjGoXbAAEgAqeGUxrcIlbjXfbc
-        mwIDAQAB
-        -----END PUBLIC KEY-----`;
-
-  let crypto_key = crypto.subtle.importKey(
-    "spki",
-    pem2ab(pemEncodedKey),
-    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-    false,
-    ["verify"]
-  );
-  
- /* return crypto.subtle.verify(
-    { name: "RSASSA-PKCS1-v1_5" },
-    crypto_key,
-    base64url_decode(jwsSignature),
-    new TextEncoder().encode(jwsSigningInput)
-  );*/
 
   /* 
 
